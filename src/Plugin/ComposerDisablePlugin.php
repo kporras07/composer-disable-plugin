@@ -40,9 +40,19 @@ class ComposerDisablePlugin implements PluginInterface, EventSubscriberInterface
         $this->composer = $composer;
         $this->io = $io;
 
-        $this->config = $composer->getConfig()->get('extra')['composer-disable-plugin'] ?? [];
+        $this->config = $composer->getPackage()->getExtra()['composer-disable-plugin'] ?? [];
         $this->rulesEvaluator = new RulesEvaluator();
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function deactivate(Composer $composer, IOInterface $io): void {}
+
+    /**
+     * {@inheritdoc}
+     */
+    public function uninstall(Composer $composer, IOInterface $io): void {}
 
     /**
      * Attach package installation events:.
@@ -65,7 +75,7 @@ class ComposerDisablePlugin implements PluginInterface, EventSubscriberInterface
             $packages = $event->getPackages();
             foreach ($packages as $index => $package) {
                 if (in_array($package->getName(), $packagesToDisable)) {
-                    $this->io->write('ComposerDisablePlugin: Disabling plugin: ' . $plugin_name);
+                    $this->io->write('ComposerDisablePlugin: Disabling plugin: ' . $package->getName());
                     unset($packages[$index]);
                 }
             }
@@ -81,7 +91,8 @@ class ComposerDisablePlugin implements PluginInterface, EventSubscriberInterface
     public function shouldDisablePackages()
     {
         $packagesToDisable = [];
-        foreach ($this->config['disablePlugins'] as $config) {
+        var_dump($this->config);
+        foreach ($this->config['disablePlugins'] ?? [] as $config) {
             $packageName = $config['packageName'];
             $rules = $config['rules'] ?? [];
             $rulesConjunction = $config['rulesConjunction'] ?? 'and';
