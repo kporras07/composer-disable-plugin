@@ -20,6 +20,7 @@ class RulesEvaluator
                 $this->rules[$rule->getName()] = $rule;
             }
         }
+        // @todo Load rules from additional plugins/files.
     }
 
     /**

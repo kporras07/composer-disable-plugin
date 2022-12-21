@@ -10,15 +10,9 @@ In your composer.json `extra` section:
 ```
 "extra": {
     "composer-disable-plugin": {
-        "disable-plugins": [
+        "disablePlugins": [
             {
-                "plugin-name": "phppro/grumphp",
-                "events": [
-                    'pre-package-install',
-                    'post-package-install',
-                    '...',
-                    'all',
-                ],
+                "packageName": "phppro/grumphp",
                 "rules": [
                     {
                         "name": "isPantheon"
