@@ -28,7 +28,7 @@ class RulesEvaluator
      */
     public function evaluate(array $rules = [], string $rulesConjunction = 'or'): bool
     {
-        $result = false;
+        $result = true;
         foreach ($rules as $rule) {
             $ruleName = $rule['name'];
             $ruleConfig = $rule['config'] ?? [];
