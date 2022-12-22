@@ -2,7 +2,7 @@
 
 namespace Kporras07\ComposerDisablePlugin\Rules;
 
-class IsPantheonRule extends RuleBase
+class IsPantheonRule extends RuleEnvBase
 {
     /**
      * Constructor.
@@ -10,13 +10,6 @@ class IsPantheonRule extends RuleBase
     public function __construct()
     {
         $this->name = 'isPantheon';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function evaluate(array $config = []): bool
-    {
-        return isset($_SERVER['PANTHEON_ENVIRONMENT']) || isset($_ENV['PANTHEON_ENVIRONMENT']);
+        $this->envName = 'PANTHEON_ENVIRONMENT';
     }
 }

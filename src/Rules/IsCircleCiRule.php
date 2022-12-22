@@ -2,7 +2,7 @@
 
 namespace Kporras07\ComposerDisablePlugin\Rules;
 
-class IsCircleCiRule extends RuleBase
+class IsCircleCiRule extends RuleEnvBase
 {
     /**
      * Constructor.
@@ -10,13 +10,6 @@ class IsCircleCiRule extends RuleBase
     public function __construct()
     {
         $this->name = 'isCircleCi';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function evaluate(array $config = []): bool
-    {
-        return isset($_SERVER['CIRCLECI']) || isset($_ENV['CIRCLECI']);
+        $this->envName = 'CIRCLECI';
     }
 }
