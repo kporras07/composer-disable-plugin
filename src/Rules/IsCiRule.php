@@ -17,6 +17,6 @@ class IsCiRule extends RuleBase
      */
     public function evaluate(array $config = []): bool
     {
-        return isset($_ENV['CI']);
+        return isset($_SERVER['CI']) || isset($_ENV['CI']);
     }
 }

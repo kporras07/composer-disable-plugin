@@ -17,6 +17,6 @@ class IsPantheonRule extends RuleBase
      */
     public function evaluate(array $config = []): bool
     {
-        return isset($_ENV['PANTHEON_ENVIRONMENT']);
+        return isset($_SERVER['PANTHEON_ENVIRONMENT']) || isset($_ENV['PANTHEON_ENVIRONMENT']);
     }
 }

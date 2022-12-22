@@ -17,6 +17,6 @@ class IsGithubActionsRule extends RuleBase
      */
     public function evaluate(array $config = []): bool
     {
-        return isset($_ENV['GITHUB_ACTIONS']);
+        return isset($_SERVER['GITHUB_ACTIONS']) || isset($_ENV['GITHUB_ACTIONS']);
     }
 }

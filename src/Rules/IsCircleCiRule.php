@@ -17,6 +17,6 @@ class IsCircleCiRule extends RuleBase
      */
     public function evaluate(array $config = []): bool
     {
-        return isset($_ENV['CIRCLECI']);
+        return isset($_SERVER['CIRCLECI']) || isset($_ENV['CIRCLECI']);
     }
 }
