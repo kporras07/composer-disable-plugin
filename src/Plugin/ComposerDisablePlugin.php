@@ -57,12 +57,16 @@ class ComposerDisablePlugin implements PluginInterface
     /**
      * {@inheritdoc}
      */
-    public function deactivate(Composer $composer, IOInterface $io): void {}
+    public function deactivate(Composer $composer, IOInterface $io): void
+    {
+    }
 
     /**
      * {@inheritdoc}
      */
-    public function uninstall(Composer $composer, IOInterface $io): void {}
+    public function uninstall(Composer $composer, IOInterface $io): void
+    {
+    }
 
     /**
      * Get a list of packages to disable.
