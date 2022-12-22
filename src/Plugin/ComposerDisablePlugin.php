@@ -4,12 +4,15 @@ namespace Kporras07\ComposerDisablePlugin\Plugin;
 
 use Composer\Plugin\PluginInterface;
 use Composer\Composer;
+use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
-use Composer\Plugin\PrePoolCreateEvent;
 use Kporras07\ComposerDisablePlugin\RulesEvaluator;
-use Composer\Plugin\PluginEvents;
+use Composer\Installer\PackageEvents;
+use Composer\Installer\PackageEvent;
+use Composer\DependencyResolver\Operation\InstallOperation;
+use Composer\DependencyResolver\Operation\UpdateOperation;
 
-class ComposerDisablePlugin implements PluginInterface
+class ComposerDisablePlugin implements PluginInterface, EventSubscriberInterface
 {
     /**
      * @var Composer\Composer;
@@ -66,6 +69,37 @@ class ComposerDisablePlugin implements PluginInterface
      */
     public function uninstall(Composer $composer, IOInterface $io): void
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            PackageEvents::POST_PACKAGE_INSTALL => 'onPostPackageInstall',
+        ];
+    }
+
+    /**
+     * Event handler for post package install.
+     */
+    public function onPostPackageInstall(PackageEvent $event)
+    {
+        $operation = $event->getOperation();
+        if ($operation instanceof InstallOperation) {
+            $package = $operation->getPackage();
+        } elseif ($operation instanceof UpdateOperation) {
+            $package = $operation->getTargetPackage();
+        } else {
+            return;
+        }
+
+        $packagesToDisable = $this->getPackagesToDisable();
+        if (in_array($package->getName(), $packagesToDisable)) {
+            $this->io->write('ComposerDisablePlugin: Disabling plugin: ' . $package->getName());
+            $this->composer->getPluginManager()->deactivatePackage($package);
+        }
     }
 
     /**
