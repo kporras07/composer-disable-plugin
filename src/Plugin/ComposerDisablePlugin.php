@@ -4,13 +4,12 @@ namespace Kporras07\ComposerDisablePlugin\Plugin;
 
 use Composer\Plugin\PluginInterface;
 use Composer\Composer;
-use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Plugin\PrePoolCreateEvent;
 use Kporras07\ComposerDisablePlugin\RulesEvaluator;
 use Composer\Plugin\PluginEvents;
 
-class ComposerDisablePlugin implements PluginInterface, EventSubscriberInterface
+class ComposerDisablePlugin implements PluginInterface
 {
     /**
      * @var Composer\Composer;
@@ -42,6 +41,17 @@ class ComposerDisablePlugin implements PluginInterface, EventSubscriberInterface
 
         $this->config = $composer->getPackage()->getExtra()['composer-disable-plugin'] ?? [];
         $this->rulesEvaluator = new RulesEvaluator();
+
+        $repo = $this->composer->getRepositoryManager()->getLocalRepository();
+        $packages = $repo->getPackages();
+        $packagesToDisable = $this->getPackagesToDisable();
+
+        foreach ($packages as $package) {
+            if (in_array($package->getName(), $packagesToDisable)) {
+                $this->io->write('ComposerDisablePlugin: Disabling plugin: ' . $package->getName());
+                $this->composer->getPluginManager()->deactivatePackage($package);
+            }
+        }
     }
 
     /**
@@ -55,43 +65,11 @@ class ComposerDisablePlugin implements PluginInterface, EventSubscriberInterface
     public function uninstall(Composer $composer, IOInterface $io): void {}
 
     /**
-     * Attach package installation events:.
-     *
-     * {@inheritdoc}
+     * Get a list of packages to disable.
      */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            PluginEvents::PRE_POOL_CREATE => ['prePoolCreate', 100],
-        ];
-    }
-
-    /**
-     * prePoolCreate event handler.
-     */
-    public function prePoolCreate(PrePoolCreateEvent $event)
-    {
-        if ($packagesToDisable = $this->shouldDisablePackages()) {
-            $packages = $event->getPackages();
-            foreach ($packages as $index => $package) {
-                if (in_array($package->getName(), $packagesToDisable)) {
-                    $this->io->write('ComposerDisablePlugin: Disabling plugin: ' . $package->getName());
-                    unset($packages[$index]);
-                }
-            }
-            // Re-hash the array.
-            $packages = array_values($packages);
-            $event->setPackages($packages);
-        }
-    }
-
-    /**
-     * prePoolCreate event handler.
-     */
-    public function shouldDisablePackages()
+    public function getPackagesToDisable()
     {
         $packagesToDisable = [];
-        var_dump($this->config);
         foreach ($this->config['disablePlugins'] ?? [] as $config) {
             $packageName = $config['packageName'];
             $rules = $config['rules'] ?? [];
